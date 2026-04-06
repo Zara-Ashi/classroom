@@ -1,43 +1,43 @@
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
+import pytest
+from playwright.sync_api import Page, expect
 
 
-def test_main_page():
-    # Настройка браузера
-    options = Options()
-    options.add_argument("--headless")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
+def test_main_page(page: Page):
+    """Тест 1: Проверка главной страницы."""
 
-    driver = webdriver.Chrome(options=options)
+    # 1. Открываем сайт
+    page.goto("https://the-internet.herokuapp.com/")
 
-    try:
-        # 1. Открываем сайт
-        driver.get("https://the-internet.herokuapp.com/")
+    # 2. Проверяем заголовок вкладки (title)
+    expect(page).to_have_title("The Internet")
+    print(f"✅ Сайт доступен. Заголовок: {page.title()}")
 
-        # 2. Проверяем заголовок страницы (title)
-        page_title = driver.title
-        assert "the-internet" in page_title, (
-            f"❌ Ошибка: заголовок страницы не содержит 'the-internet'. "
-            f"Текущий заголовок: '{page_title}'"
-        )
-
-        # 3. Находим заголовок <h1> на странице
-        h1_element = driver.find_element(By.TAG_NAME, "h1")
-        h1_text = h1_element.text
-
-        assert "Available Examples" in h1_text, (
-            f"❌ Ошибка: заголовок <h1> не содержит 'Available Examples'. "
-            f"Текущий текст: '{h1_text}'"
-        )
-
-        # 4. Выводим результат в консоль
-        print(f"✅ Сайт доступен. Заголовок: {page_title}")
-
-    finally:
-        driver.quit()
+    # 3. Проверяем заголовок <h1>
+    expect(page.locator("h1")).to_have_text("Available Examples")
+    print("✅ Заголовок <h1> корректен: 'Available Examples'")
 
 
-if __name__ == "__main__":
-    test_main_page()
+def test_form_login(page: Page):
+    """Тест 2: Вход через форму аутентификации."""
+
+    # 1. Переходим на страницу входа
+    page.goto("https://the-internet.herokuapp.com/login")
+    print(f"📄 Открыта страница: {page.url}")
+
+    # 2. Вводим username
+    page.fill("#username", "tomsmith")
+    print("✍️  Введён username: tomsmith")
+
+    # 3. Вводим password
+    page.fill("#password", "SuperSecretPassword!")
+    print("✍️  Введён password: SuperSecretPassword!")
+
+    # 4. Кликаем по кнопке Login
+    page.click("button[type='submit']")
+    print("🖱️  Клик по кнопке Login")
+
+    # 5. Проверяем URL (Playwright ждёт автоматически)
+    expect(page).to_have_url("https://the-internet.herokuapp.com/secure")
+
+    path = "/" + page.url.rstrip("/").split("/")[-1]
+    print(f"✅ Успешный вход! URL: {path}")
