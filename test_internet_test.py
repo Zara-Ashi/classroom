@@ -83,30 +83,29 @@ def test_checkboxes():
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
 
-        # 1. Переходим в раздел Checkboxes
         page.goto("https://the-internet.herokuapp.com/checkboxes")
 
-        # 2. Находим оба чекбокса
+
         checkboxes = page.locator("input[type='checkbox']")
         checkbox1 = checkboxes.nth(0)
         checkbox2 = checkboxes.nth(1)
 
-        # 3. Проверяем начальное состояние
+
         assert not checkbox1.is_checked(), "❌ Checkbox 1 должен быть НЕ отмечен изначально"
         assert checkbox2.is_checked(),     "❌ Checkbox 2 должен быть отмечен изначально"
         print("✅ Начальное состояние верно: Checkbox1=False, Checkbox2=True")
 
-        # 4. Отмечаем Checkbox 1
+
         checkbox1.check()
 
-        # 5. Снимаем Checkbox 2
+
         checkbox2.uncheck()
 
-        # 6. Проверяем финальное состояние
+
         assert checkbox1.is_checked(),     "❌ Checkbox 1 должен быть отмечен"
         assert not checkbox2.is_checked(), "❌ Checkbox 2 должен быть НЕ отмечен"
 
-        # 7. Выводим результат
+
         print(f"✅ Checkbox 1: checked={checkbox1.is_checked()}")
         print(f"✅ Checkbox 2: checked={checkbox2.is_checked()}")
 
