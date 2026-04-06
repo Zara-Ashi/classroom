@@ -1,0 +1,77 @@
+from playwright.sync_api import sync_playwright
+
+
+def test_main_page():
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+        page.goto("https://the-internet.herokuapp.com/")
+
+        title = page.title()
+        assert "The Internet" in title, (
+            f"❌ Заголовок страницы не содержит 'The Internet'. Текущий: '{title}'"
+        )
+
+        h1 = page.locator("h1").first.inner_text()
+        assert h1 == "Welcome to the-internet", (
+            f"❌ Тег <h1> не совпадает. Текущий: '{h1}'"
+        )
+
+        h2 = page.locator("h2").first.inner_text()
+        assert h2 == "Available Examples", (
+            f"❌ Тег <h2> не совпадает. Текущий: '{h2}'"
+        )
+
+        print(f"✅ Сайт доступен. Заголовок: {title}")
+        print(f"h1: {h1}")
+        print(f"h2: {h2}")
+
+        browser.close()
+
+
+def test_navigate_to_example():
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+        page.goto("https://the-internet.herokuapp.com/")
+
+        page.get_by_text("Form Authentication").click()
+        current_url = page.url
+
+        assert "/login" in current_url, (
+            f"❌ URL не содержит '/login'. Текущий: '{current_url}'"
+        )
+        print(f"✅ Перешли в: Form Authentication | URL: {current_url}")
+
+        browser.close()
+
+
+def test_login_form():
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+        page.goto("https://the-internet.herokuapp.com/login")
+
+        page.fill("#username", "tomsmith")
+        page.fill("#password", "SuperSecretPassword!")
+        page.get_by_role("button", name="Login").click()
+
+        page.wait_for_url("**/secure")
+        assert "/secure" in page.url, (
+            f"❌ URL не содержит '/secure'. Текущий: '{page.url}'"
+        )
+        print(f"✅ Успешный вход! URL: {page.url}")
+
+        # Выход — используем get_by_role("link") чтобы не попасть на <h4>
+        page.get_by_role("link", name="Logout").click()
+        page.wait_for_url("**/login")
+
+        assert "/login" in page.url, (
+            f"❌ URL не содержит '/login'. Текущий: '{page.url}'"
+        )
+        print(f"✅ Успешный выход! URL: {page.url}")
+
+        browser.close()
