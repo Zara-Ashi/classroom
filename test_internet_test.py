@@ -119,39 +119,39 @@ def test_dropdown():
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
 
-        # 1. Переходим в раздел Dropdown
+
         page.goto("https://the-internet.herokuapp.com/dropdown")
 
-        # 2. Находим выпадающий список #dropdown
+
         dropdown = page.locator("#dropdown")
 
-        # 3. Проверяем начальное значение
+
         initial = dropdown.input_value()
         assert initial == "", (
             f"❌ Начальное значение должно быть пустым. Текущее: '{initial}'"
         )
         print(f"✅ Начальное значение пустое: '{initial}'")
 
-        # 4. Выбираем Option 1
+
         dropdown.select_option(label="Option 1")
 
-        # 5. Проверяем что выбрано Option 1
+
         selected = dropdown.input_value()
         assert selected == "1", (
             f"❌ Должно быть выбрано 'Option 1'. Текущее: '{selected}'"
         )
         print(f"✅ Выбрано: Option 1")
 
-        # 6. Выбираем Option 2
+
         dropdown.select_option(label="Option 2")
 
-        # 7. Проверяем что выбрано Option 2
+
         selected = dropdown.input_value()
         assert selected == "2", (
             f"❌ Должно быть выбрано 'Option 2'. Текущее: '{selected}'"
         )
 
-        # 8. Выводим результат
+
         print(f"✅ Выбрано: Option 2")
 
         browser.close()
