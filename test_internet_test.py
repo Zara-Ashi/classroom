@@ -65,7 +65,7 @@ def test_login_form():
         )
         print(f"✅ Успешный вход! URL: {page.url}")
 
-        # Выход — используем get_by_role("link") чтобы не попасть на <h4>
+
         page.get_by_role("link", name="Logout").click()
         page.wait_for_url("**/login")
 
