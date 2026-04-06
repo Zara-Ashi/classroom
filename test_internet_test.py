@@ -4,7 +4,7 @@ from playwright.sync_api import sync_playwright
 def test_main_page():
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
+        browser = p.chromium.launch(headless=False)
         page = browser.new_page()
         page.goto("https://the-internet.herokuapp.com/")
 
@@ -33,7 +33,7 @@ def test_main_page():
 def test_navigate_to_example():
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
+        browser = p.chromium.launch(headless=False)
         page = browser.new_page()
         page.goto("https://the-internet.herokuapp.com/")
 
@@ -51,7 +51,7 @@ def test_navigate_to_example():
 def test_login_form():
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
+        browser = p.chromium.launch(headless=False)
         page = browser.new_page()
         page.goto("https://the-internet.herokuapp.com/login")
 
@@ -80,7 +80,7 @@ def test_login_form():
 def test_checkboxes():
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
+        browser = p.chromium.launch(headless=False)
         page = browser.new_page()
 
         # 1. Переходим в раздел Checkboxes
@@ -116,7 +116,7 @@ def test_checkboxes():
 def test_dropdown():
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
+        browser = p.chromium.launch(headless=False)
         page = browser.new_page()
 
 
