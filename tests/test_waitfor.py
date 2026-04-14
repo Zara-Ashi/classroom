@@ -2,10 +2,8 @@ import time
 from playwright.sync_api import expect, TimeoutError
 
 
-# 🔹 29x01. Ожидание загрузки страницы
-def test_29x01_load_state(page, context, base_url):
-    import time
-
+# 🔹 загрузка главной страницы и сравнение load vs domcontentloaded
+def test_page_load_states(page, base_url):
     start = time.time()
     page.goto(base_url)
     page.wait_for_load_state("load")
@@ -13,18 +11,19 @@ def test_29x01_load_state(page, context, base_url):
 
     assert page.title() != ""
 
-    page2 = context.new_page()
+    page2 = page.context.new_page()
 
     start = time.time()
     page2.goto(base_url)
     page2.wait_for_load_state("domcontentloaded")
     dom_time = time.time() - start
 
-    print(load_time, dom_time)
+    print(f"load: {load_time:.4f}")
+    print(f"domcontentloaded: {dom_time:.4f}")
 
 
-# 🔹 29x02. Ожидание элемента
-def test_29x02_wait_for_element(page, base_url):
+# 🔹 ожидание появления элемента после динамической загрузки
+def test_wait_for_element_visible(page, base_url):
     page.goto(f"{base_url}/dynamic_loading/1")
     page.click("text=Start")
 
@@ -32,8 +31,8 @@ def test_29x02_wait_for_element(page, base_url):
     expect(page.locator("#finish")).to_be_visible()
 
 
-# 🔹 29x03. Ожидание исчезновения
-def test_29x03_wait_for_disappear(page, base_url):
+# 🔹 ожидание исчезновения loader и появления результата
+def test_wait_for_loader_to_disappear(page, base_url):
     page.goto(f"{base_url}/dynamic_loading/2")
     page.click("text=Start")
 
@@ -42,9 +41,12 @@ def test_29x03_wait_for_disappear(page, base_url):
     print("wait:", time.time() - start)
 
 
-def test_29x04_wait_for_url(login, context, base_url):
+# 🔹 проверка успешного и неуспешного логина через wait_for_url
+def test_login_redirect_success_and_failure(login, context, base_url):
+    # проверка успешного логина
     assert "/secure" in login.url
 
+    # проверка неуспешного логина
     page = context.new_page()
     page.goto(f"{base_url}/login")
     page.fill("#username", "tomsmith")
@@ -54,12 +56,12 @@ def test_29x04_wait_for_url(login, context, base_url):
     try:
         page.wait_for_url("**/secure", timeout=5000)
         assert False
-    except Exception:
+    except TimeoutError:
         pass
 
 
-# 🔹 29x12. Комбинированные ожидания
-def test_29x12_combined_waits(login):
+# 🔹 комбинированные ожидания после логина
+def test_combined_wait_strategies(login):
     page = login
 
     start = time.time()
