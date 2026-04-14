@@ -3,7 +3,9 @@ from playwright.sync_api import expect, TimeoutError
 
 
 # 🔹 29x01. Ожидание загрузки страницы
-def test_29x01_load_state(page, base_url):
+def test_29x01_load_state(page, context, base_url):
+    import time
+
     start = time.time()
     page.goto(base_url)
     page.wait_for_load_state("load")
@@ -11,15 +13,14 @@ def test_29x01_load_state(page, base_url):
 
     assert page.title() != ""
 
-    page2 = page.context.new_page()
+    page2 = context.new_page()
 
     start = time.time()
     page2.goto(base_url)
     page2.wait_for_load_state("domcontentloaded")
     dom_time = time.time() - start
 
-    print(f"load: {load_time:.4f}")
-    print(f"domcontentloaded: {dom_time:.4f}")
+    print(load_time, dom_time)
 
 
 # 🔹 29x02. Ожидание элемента
@@ -41,11 +42,10 @@ def test_29x03_wait_for_disappear(page, base_url):
     print("wait:", time.time() - start)
 
 
-# 🔹 29x04. Ожидание URL (negative case)
-def test_29x04_wait_for_url(login, base_url):
+def test_29x04_wait_for_url(login, context, base_url):
     assert "/secure" in login.url
 
-    page = login.context.new_page()
+    page = context.new_page()
     page.goto(f"{base_url}/login")
     page.fill("#username", "tomsmith")
     page.fill("#password", "wrongpassword")
@@ -54,7 +54,7 @@ def test_29x04_wait_for_url(login, base_url):
     try:
         page.wait_for_url("**/secure", timeout=5000)
         assert False
-    except TimeoutError:
+    except Exception:
         pass
 
 

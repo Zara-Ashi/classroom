@@ -13,8 +13,15 @@ def browser():
 
 
 @pytest.fixture(scope="function")
-def page(browser):
-    page = browser.new_page()
+def context(browser):
+    context = browser.new_context()
+    yield context
+    context.close()
+
+
+@pytest.fixture(scope="function")
+def page(context):
+    page = context.new_page()
     yield page
     page.close()
 
