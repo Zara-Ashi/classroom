@@ -95,4 +95,33 @@ def test_29x04_wait_for_url():
         except TimeoutError:
             pass
 
+def test_29x12_combined_waits():
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+
+        page.goto(f"{BASE}/login")
+
+        page.fill("#username", "tomsmith")
+        page.fill("#password", "SuperSecretPassword!")
+
+        page.click("button[type='submit']")
+
+        start_url = time.time()
+        page.wait_for_url("**/secure")
+        url_time = time.time() - start_url
+
+        start_net = time.time()
+        page.wait_for_load_state("networkidle")
+        net_time = time.time() - start_net
+
+        welcome_locator = page.locator("#content")
+        start_expect = time.time()
+        expect(welcome_locator).to_contain_text("Welcome")
+        expect_time = time.time() - start_expect
+
+        print(f"URL wait: {url_time:.4f}")
+        print(f"networkidle wait: {net_time:.4f}")
+        print(f"expect wait: {expect_time:.4f}")
+
         browser.close()
