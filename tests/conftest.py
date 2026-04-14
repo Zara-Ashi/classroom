@@ -7,7 +7,7 @@ BASE = "https://the-internet.herokuapp.com"
 @pytest.fixture(scope="session")
 def browser():
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
+        browser = p.chromium.launch(headless=False)
         yield browser
         browser.close()
 
@@ -19,9 +19,14 @@ def page(browser):
     page.close()
 
 
+@pytest.fixture(scope="session")
+def base_url():
+    return BASE
+
+
 @pytest.fixture(scope="function")
-def login(page):
-    page.goto(f"{BASE}/login")
+def login(page, base_url):
+    page.goto(f"{base_url}/login")
     page.fill("#username", "tomsmith")
     page.fill("#password", "SuperSecretPassword!")
     page.click("button[type='submit']")
